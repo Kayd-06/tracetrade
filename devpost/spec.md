@@ -140,4 +140,4 @@ Rejected: **Binance** (HTTP 451, region-restricted from this box), **Stooq** (40
 
 - Public repo: https://github.com/Kayd-06/tracetrade (MIT)
 - Demo video: _TBD_
-- Live app (optional): _TBD_
+- Live app: https://tracetrade.vercel.app (Vercel Hobby)

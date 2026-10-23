@@ -6,6 +6,8 @@
 [![Next.js](https://img.shields.io/badge/Next.js-16-000?logo=nextdotjs)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 
+**Live demo: [tracetrade.vercel.app](https://tracetrade.vercel.app)**
+
 Built for the Devpost hackathon **Build With AI: Basics**.
 
 ![TraceTrade landing page](docs/screenshots/hero.png)
