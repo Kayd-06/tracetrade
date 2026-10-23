@@ -46,5 +46,5 @@ Build mode: fast
 - [ ] Kunal adds a free Gemini key and does a live run before ship.
 
 ## Revisions
-- 2026-10-23: Slices 1–2 built in one pass (fast mode, delegated).
+- 2026-10-23: Slices 1-2 built in one pass (fast mode, delegated).
 - 2026-10-23: Slice 3 verified live; default model gemini-3.5-flash with free-tier fallbacks (3.8-flash returned 429 on the free key).

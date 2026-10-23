@@ -97,7 +97,7 @@ export async function decide(a: Asset, sig: Signals, p: PortfolioState, cfg: Llm
       ti++; // 429/503/404/timeout/other → next model, then next provider
     }
   }
-  return { proposal: { ticker: a.ticker, action: "HOLD", sizeUsd: 0, confidence: "low", thesis: "AI unavailable — holding.", reasoning: `The AI call failed (${lastErr.slice(0, 160)}), so no trade was proposed.`, citedSourceIds: [] }, dropped: [], note: "AI error" };
+  return { proposal: { ticker: a.ticker, action: "HOLD", sizeUsd: 0, confidence: "low", thesis: "AI unavailable, holding.", reasoning: `The AI call failed (${lastErr.slice(0, 160)}), so no trade was proposed.`, citedSourceIds: [] }, dropped: [], note: "AI error" };
 }
 
 /** Timing so a full run (signals ~3s + 2 batches of 4 assets) fits Vercel's 60s limit. */
@@ -135,7 +135,7 @@ export function mockDecide(a: Asset, sig: Signals, p: PortfolioState): z.infer<t
     return { action: "BUY", sizeUsd: size, confidence: conf, thesis: `Positive headlines and price action for ${a.name}.`, reasoning: `Headline sentiment score is +${newsScore} across ${news.length} recent stories ${tag(supporting.slice(0, 3).map((n) => n.id))}; 24h move ${chg.toFixed(2)}% ${px ? `[${px.id}]` : ""}.${pm ? ` Prediction market context: ${pm.title} [${pm.id}].` : ""} Momentum looks constructive, so the agent proposes a ${conf}-confidence buy.`, citedSourceIds: cites };
   }
   if (total <= -1 && held) {
-    return { action: "SELL", sizeUsd: held.qty * (sig.quote?.price ?? held.avgCost), confidence: total <= -2 ? "high" : "med", thesis: `Negative news flow — close the ${a.ticker} position.`, reasoning: `Headline sentiment is ${newsScore} ${tag(supporting.slice(0, 3).map((n) => n.id))} and the 24h move is ${chg.toFixed(2)}% ${px ? `[${px.id}]` : ""}. The agent prefers to step aside and sell the holding.`, citedSourceIds: cites };
+    return { action: "SELL", sizeUsd: held.qty * (sig.quote?.price ?? held.avgCost), confidence: total <= -2 ? "high" : "med", thesis: `Negative news flow: close the ${a.ticker} position.`, reasoning: `Headline sentiment is ${newsScore} ${tag(supporting.slice(0, 3).map((n) => n.id))} and the 24h move is ${chg.toFixed(2)}% ${px ? `[${px.id}]` : ""}. The agent prefers to step aside and sell the holding.`, citedSourceIds: cites };
   }
   return { action: "HOLD", sizeUsd: 0, confidence: "low", thesis: total <= -1 ? "Bearish, but nothing held to sell (no shorting)." : "Signals are mixed or weak.", reasoning: `Headline sentiment ${newsScore >= 0 ? "+" : ""}${newsScore}, 24h move ${chg.toFixed(2)}%. Not strong enough to act.`, citedSourceIds: px ? [px.id] : [] };
 }

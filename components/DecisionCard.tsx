@@ -25,7 +25,7 @@ function Reasoning({ d }: { d: Decision }) {
           <span key={i}>
             {m[1].split(/\s*,\s*/).map((id, k) => {
               const n = idx.get(id);
-              return n ? <a key={k} href={`#src-${d.id}-${n}`} className="font-mono text-xs text-up hover:underline">[{n}]</a> : <span key={k} className="font-mono text-xs text-down line-through" title="Citation not in fetched sources — dropped">[?]</span>;
+              return n ? <a key={k} href={`#src-${d.id}-${n}`} className="font-mono text-xs text-up hover:underline">[{n}]</a> : <span key={k} className="font-mono text-xs text-down line-through" title="Citation not in fetched sources, so it was dropped">[?]</span>;
             })}
           </span>
         );

@@ -6,7 +6,7 @@ const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
 const mono = JetBrains_Mono({ variable: "--font-jbmono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "TraceTrade — an AI paper trader that shows its receipts",
+  title: "TraceTrade: an AI paper trader that shows its receipts",
   description: "An AI agent paper-trades $10,000 of fake money across crypto and stocks, cites every source, and self-checks each trade against risk rules.",
 };
 

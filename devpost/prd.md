@@ -3,7 +3,7 @@ doc: prd
 status: approved
 ---
 
-# TraceTrade — Product Requirements
+# TraceTrade: Product Requirements
 
 An AI paper-trading agent for students getting into quant: it reads signals, proposes trades with receipts, audits itself, and trades a simulated $10,000 portfolio.
 Source: `scope.md > The Unique Kernel`, `scope.md > Who It's For`.
@@ -23,14 +23,14 @@ Source: `scope.md > The Core Loop`, `scope.md > What "Working" Looks Like`.
 
 ## Screens and Layout
 One screen (the dashboard). **(proposed)**
-- **Top bar:** TraceTrade name, "PAPER TRADING — no real money" badge, last-run time, **Run agent** button, **Reset portfolio** link.
+- **Top bar:** TraceTrade name, "PAPER TRADING: no real money" badge, last-run time, **Run agent** button, **Reset portfolio** link.
 - **Left column:** Portfolio (cash, total value, P&L vs $10k, holdings table) above the Watchlist (8 tickers, price, 24h change).
 - **Centre/right column:** Agent trace (live during a run) above the Decision log (newest first).
 - **Receipts:** expand inline inside a decision card (no separate page).
 - On mobile the columns stack: run bar, trace, log, then portfolio.
 
 ## Look and Feel
-**(proposed — Kunal asked for "terminal/audit-trail look")**
+**(proposed: Kunal asked for "terminal/audit-trail look")**
 - Dark trading-terminal style: near-black background, monospace for numbers/tickers, clean sans for prose.
 - Colour carries meaning only: green = BUY/approved, red = SELL/blocked, amber = resized/warning, grey = HOLD.
 - Dense but readable, like an audit log: timestamps on everything, source links visible.
@@ -74,20 +74,20 @@ Rule-based; the same rules every time. **(proposed defaults)**
 - [ ] **Reset portfolio** asks for confirmation, then returns to $10,000 and clears the log.
 
 ## States and Boundaries
-- **First use** — $10,000 cash, no holdings, log says "No decisions yet — run the agent to see its first trades with receipts."
-- **Running** — button disabled, trace animates; a second click does nothing.
-- **Partial data** — if one source fails (e.g. Polymarket), the run continues; affected decisions say which source was missing, and freshness/independence checks apply.
-- **Source/AI failure** — if prices or the AI are unavailable, run stops with a clear message ("Couldn't reach price data — try again") and the portfolio is untouched.
-- **All HOLD** — run completes and says "No trades this run — agent saw no strong signal", listing reasons.
-- **Persistence** — portfolio and log persist between visits on the same device until Reset. **(proposed)**
-- **Boundary** — paper money only; the page always shows the "no real money" badge.
+- **First use:** $10,000 cash, no holdings, log says "No decisions yet. Run the agent to see its first trades with receipts."
+- **Running:** button disabled, trace animates; a second click does nothing.
+- **Partial data:** if one source fails (e.g. Polymarket), the run continues; affected decisions say which source was missing, and freshness/independence checks apply.
+- **Source/AI failure:** if prices or the AI are unavailable, run stops with a clear message ("Couldn't reach price data. Try again") and the portfolio is untouched.
+- **All HOLD:** run completes and says "No trades this run: the agent saw no strong signal", listing reasons.
+- **Persistence:** portfolio and log persist between visits on the same device until Reset. **(proposed)**
+- **Boundary:** paper money only; the page always shows the "no real money" badge.
 
 ## Product Decisions
-- Name **TraceTrade** — confirmed by Kunal.
-- Simulated portfolio only, $10,000 start — no real brokerage risk.
-- Self-check is rule-based, not a second AI — predictable and explainable.
-- 8-asset watchlist (BTC, ETH, SOL, AAPL, NVDA, TSLA, MSFT, SPY) — Kunal wanted more than 3–5.
-- Terminal/audit-trail look — accepted by Kunal.
+- Name **TraceTrade**, confirmed by Kunal.
+- Simulated portfolio only, $10,000 start: no real brokerage risk.
+- Self-check is rule-based, not a second AI: predictable and explainable.
+- 8-asset watchlist (BTC, ETH, SOL, AAPL, NVDA, TSLA, MSFT, SPY): Kunal wanted more than 3-5.
+- Terminal/audit-trail look: accepted by Kunal.
 - Social sentiment deferred.
 - Runs are manual (button), not scheduled. **(proposed)**
 
@@ -95,11 +95,11 @@ Rule-based; the same rules every time. **(proposed defaults)**
 Single dashboard; manual Run; signals (price, headlines, Polymarket odds) for 8 assets; AI decision with cited reasoning; rule-based self-check with approve/resize/block; paper portfolio with persistence and reset; expandable receipts; clear empty/error states; deployed on Vercel.
 
 ## Deferred From the POC
-- Scheduled/autonomous runs — needs background jobs; manual run demos better.
-- Social sentiment — no reliable free source yet.
-- Editable rules/watchlist — fixed defaults prove the kernel.
-- Charts/backtesting — not needed to show receipts.
-- Accounts/multi-device sync — single user is enough.
+- Scheduled/autonomous runs: needs background jobs; manual run demos better.
+- Social sentiment: no reliable free source yet.
+- Editable rules/watchlist: fixed defaults prove the kernel.
+- Charts/backtesting: not needed to show receipts.
+- Accounts/multi-device sync: single user is enough.
 
 ## Possible Later Enhancements
 - AI "second-opinion" critic alongside the rules.
@@ -107,14 +107,14 @@ Single dashboard; manual Run; signals (price, headlines, Polymarket odds) for 8 
 - Shareable link to a single decision's receipts.
 
 ## Non-Goals
-- Real money, brokerages or exchanges — safety and time.
-- Financial advice — the page states it's an educational simulation.
-- Options, leverage, shorting — complexity without proving the kernel.
-- Paid data feeds — free sources only.
+- Real money, brokerages or exchanges: safety and time.
+- Financial advice: the page states it's an educational simulation.
+- Options, leverage, shorting: complexity without proving the kernel.
+- Paid data feeds: free sources only.
 
 ## Open Questions
-- Confirm self-check thresholds (20% max position, 2 sources, 15 min / 48 h freshness) — before `4-spec`.
-- Confirm decision-card fields and confidence levels — before `4-spec`.
-- Confirm one-screen layout and persistence on the same device — before `4-spec`.
-- Confirm manual-only runs — can wait.
-- Should SELL allow shorting? Proposed no — can wait.
+- Confirm self-check thresholds (20% max position, 2 sources, 15 min / 48 h freshness): before `4-spec`.
+- Confirm decision-card fields and confidence levels: before `4-spec`.
+- Confirm one-screen layout and persistence on the same device: before `4-spec`.
+- Confirm manual-only runs: can wait.
+- Should SELL allow shorting? Proposed no; can wait.

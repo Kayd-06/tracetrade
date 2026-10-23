@@ -55,7 +55,7 @@ export function Dashboard() {
         }
       }
     } catch (e) {
-      push({ kind: "error", message: `Couldn't complete the run — try again. (${e instanceof Error ? e.message : e})` });
+      push({ kind: "error", message: `Couldn't complete the run. Try again. (${e instanceof Error ? e.message : e})` });
     } finally {
       setRunning(false);
     }
@@ -92,7 +92,7 @@ export function Dashboard() {
           {/* window bar */}
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3 border-b border-line bg-panel2/60 px-5 py-3.5">
             <div className="flex items-center gap-2">
-              <span className="rounded-md border border-warn/30 bg-warn/10 px-1.5 py-0.5 font-mono text-[10px] text-warn">PAPER — no real money</span>
+              <span className="rounded-md border border-warn/30 bg-warn/10 px-1.5 py-0.5 font-mono text-[10px] text-warn">PAPER · no real money</span>
               {aiMode && <span className="flex items-center gap-1.5 rounded-md border border-line px-1.5 py-0.5 font-mono text-[10px] text-muted"><span className={`h-1.5 w-1.5 rounded-full ${aiMode.startsWith("LIVE") ? "pulse-dot bg-up" : "bg-dim"}`} />{aiMode}</span>}
             </div>
             <Stat label="Portfolio value" value={usd(total)} />

@@ -20,8 +20,8 @@ export async function fetchPolymarket(a: Asset): Promise<Source | null> {
         const prices = JSON.parse(m.outcomePrices) as string[];
         const outcomes = m.outcomes ? (JSON.parse(m.outcomes) as string[]) : ["Yes", "No"];
         const p = parseFloat(prices[0]);
-        if (!(p > 0.03 && p < 0.97)) continue; // skip near-certain markets — no signal
-        return { id: `${a.ticker}-P1`, kind: "polymarket", title: `${m.question ?? e.title} — ${outcomes[0]} ${(p * 100).toFixed(0)}%`, outlet: "Polymarket", url: `https://polymarket.com/event/${e.slug}`, time: new Date().toISOString() };
+        if (!(p > 0.03 && p < 0.97)) continue; // skip near-certain markets, no signal
+        return { id: `${a.ticker}-P1`, kind: "polymarket", title: `${m.question ?? e.title}: ${outcomes[0]} ${(p * 100).toFixed(0)}%`, outlet: "Polymarket", url: `https://polymarket.com/event/${e.slug}`, time: new Date().toISOString() };
       } catch { /* skip malformed */ }
     }
   }

@@ -12,7 +12,7 @@ export async function* runAgent(start: PortfolioState): AsyncGenerator<RunEvent>
   yield { type: "step", step: "signals", message: `Fetching prices, headlines and Polymarket odds for ${WATCHLIST.length} assets…` };
   const { quotes, errors } = await fetchQuotes();
   for (const e of errors) yield { type: "step", step: "signals", message: `⚠ ${e}` };
-  if (Object.keys(quotes).length === 0) { yield { type: "error", message: "Couldn't reach price data — try again. Portfolio untouched." }; return; }
+  if (Object.keys(quotes).length === 0) { yield { type: "error", message: "Couldn't reach price data. Try again. Portfolio untouched." }; return; }
   const signals = await Promise.all(WATCHLIST.map((a) => gatherSignals(a, quotes[a.ticker])));
   const nSrc = signals.reduce((n, s) => n + s.sources.length, 0);
   yield { type: "step", step: "signals", message: `Collected ${nSrc} sources.` };
@@ -28,7 +28,7 @@ export async function* runAgent(start: PortfolioState): AsyncGenerator<RunEvent>
   const used = [...new Set(proposals.map((p) => p.model).filter(Boolean))];
   if (used.length) yield { type: "step", step: "reasoning", message: `Model(s) used: ${used.join(", ")}` };
   if (cfg.mode === "live" && proposals.every((p) => p.note === "AI error")) {
-    yield { type: "error", message: "Couldn't reach the AI — try again. Portfolio untouched." };
+    yield { type: "error", message: "Couldn't reach the AI. Try again. Portfolio untouched." };
     return;
   }
 
@@ -51,5 +51,5 @@ export async function* runAgent(start: PortfolioState): AsyncGenerator<RunEvent>
     if (d.verdict !== "hold") yield { type: "step", step: "execute", message: `${a.ticker} ${proposal.action} → ${d.verdict.toUpperCase()}` };
     yield { type: "decision", decision: d };
   }
-  yield { type: "done", summary, aiMode: cfg.mode, message: summary.approved + summary.resized === 0 ? "No trades this run — agent saw no strong signal or every trade was blocked." : undefined };
+  yield { type: "done", summary, aiMode: cfg.mode, message: summary.approved + summary.resized === 0 ? "No trades this run: the agent saw no strong signal or every trade was blocked." : undefined };
 }

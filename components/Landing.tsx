@@ -83,7 +83,7 @@ function TypingTrace() {
     <div ref={ref} className="ring-card overflow-hidden rounded-xl border border-line bg-panel/90 backdrop-blur">
       <div className="flex items-center gap-2 border-b border-line px-4 py-2.5">
         <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]/80" /><span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]/80" /><span className="h-2.5 w-2.5 rounded-full bg-[#28c840]/80" />
-        <span className="ml-3 font-mono text-[11px] text-dim">tracetrade — agent run</span>
+        <span className="ml-3 font-mono text-[11px] text-dim">tracetrade: agent run</span>
         <span className="ml-auto flex items-center gap-1.5 font-mono text-[10px] text-up"><span className="pulse-dot h-1.5 w-1.5 rounded-full bg-up" />LIVE</span>
       </div>
       <div className="h-[248px] space-y-1 px-4 py-3 font-mono text-[12.5px] leading-relaxed">
@@ -150,7 +150,7 @@ export function SourceMarquee() {
   const row = [...SOURCES, ...SOURCES, ...SOURCES, ...SOURCES];
   return (
     <section aria-label="Data sources" className="border-y border-line bg-panel/30 py-5">
-      <p className="mb-3 text-center font-mono text-[10px] uppercase tracking-[0.2em] text-dim">Data from 4 free, public sources — every claim cited</p>
+      <p className="mb-3 text-center font-mono text-[10px] uppercase tracking-[0.2em] text-dim">Data from 4 free, public sources. Every claim cited</p>
       <div className="relative overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_12%,#000_88%,transparent)]">
         <div className="marquee flex w-max gap-12 pr-12">
           {row.map((s, i) => <span key={i} className="whitespace-nowrap text-lg font-medium tracking-tight text-muted/70">{s}</span>)}
@@ -163,9 +163,9 @@ export function SourceMarquee() {
 
 /* ------------------------------------------------------------------ Pipeline scrollytelling */
 const STEPS = [
-  { k: "01", title: "Gather signals", body: "Live prices from CoinGecko and Yahoo Finance, the latest headlines from Google News, and Polymarket odds — for 8 assets, every run. Each source gets an ID.", tag: "signals" },
+  { k: "01", title: "Gather signals", body: "Live prices from CoinGecko and Yahoo Finance, the latest headlines from Google News, and Polymarket odds for 8 assets, every run. Each source gets an ID.", tag: "signals" },
   { k: "02", title: "Reason with citations", body: "Gemini (free tier, with Groq as fallback) proposes BUY, SELL or HOLD and must cite source IDs. Any citation that wasn't actually fetched is caught and dropped.", tag: "reasoning" },
-  { k: "03", title: "Self-check every trade", body: "Deterministic rules — not the model — decide: stale data or a single outlet blocks the trade; oversized trades are resized to 20% of the portfolio.", tag: "check" },
+  { k: "03", title: "Self-check every trade", body: "Deterministic rules decide, not the model: stale data or a single outlet blocks the trade; oversized trades are resized to 20% of the portfolio.", tag: "check" },
   { k: "04", title: "Execute on paper, keep the receipt", body: "Approved trades fill at the fetched price. Every decision keeps its sources, reasoning and check results, so you can audit exactly why it happened.", tag: "execute" },
 ];
 
@@ -250,7 +250,7 @@ const RULES_UI = [
   { k: "block", t: "Fresh data only", d: "Prices older than 15 minutes or headlines older than 48 hours block the trade." },
   { k: "block", t: "Two independent outlets", d: "At least two different publishers must back a trade. The price feed doesn't count." },
   { k: "block", t: "No shorting", d: "SELL only closes or trims something the portfolio actually holds." },
-  { k: "resize", t: "20% position cap", d: "No single asset can exceed a fifth of the portfolio — oversized trades are cut down." },
+  { k: "resize", t: "20% position cap", d: "No single asset can exceed a fifth of the portfolio. Oversized trades are cut down." },
   { k: "resize", t: "Cash on hand", d: "Trades are trimmed to available cash; anything under $100 is blocked." },
   { k: "verify", t: "Citation verification", d: "If the AI cites a source that was never fetched, the citation is dropped and shown." },
 ];
@@ -262,7 +262,7 @@ export function Rules() {
         <Reveal>
           <p className="font-mono text-xs uppercase tracking-[0.2em] text-up">The self-check</p>
           <h2 className="mt-3 max-w-2xl text-4xl font-semibold tracking-[-0.03em]">The model proposes. <span className="text-muted">The rules decide.</span></h2>
-          <p className="mt-4 max-w-xl text-muted">Risk rules are plain code, unit-tested and deterministic — so a confident-sounding model can never talk its way past them.</p>
+          <p className="mt-4 max-w-xl text-muted">Risk rules are plain code, unit-tested and deterministic, so a confident-sounding model can never talk its way past them.</p>
         </Reveal>
         <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {RULES_UI.map((r, i) => (
