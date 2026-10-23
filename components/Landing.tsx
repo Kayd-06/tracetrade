@@ -145,17 +145,18 @@ export function Hero() {
 }
 
 /* ------------------------------------------------------------------ Marquee */
-const SOURCES = ["CoinGecko", "Yahoo Finance", "Google News", "Polymarket", "Gemini", "Groq", "Reuters", "CNBC", "Bloomberg", "CoinDesk"];
+const SOURCES = ["CoinGecko", "Yahoo Finance", "Google News", "Polymarket"];
 export function SourceMarquee() {
-  const row = [...SOURCES, ...SOURCES];
+  const row = [...SOURCES, ...SOURCES, ...SOURCES, ...SOURCES];
   return (
     <section aria-label="Data sources" className="border-y border-line bg-panel/30 py-5">
-      <p className="mb-3 text-center font-mono text-[10px] uppercase tracking-[0.2em] text-dim">Reads from free, public sources — every claim cited</p>
+      <p className="mb-3 text-center font-mono text-[10px] uppercase tracking-[0.2em] text-dim">Data from 4 free, public sources — every claim cited</p>
       <div className="relative overflow-hidden [mask-image:linear-gradient(90deg,transparent,#000_12%,#000_88%,transparent)]">
         <div className="marquee flex w-max gap-12 pr-12">
           {row.map((s, i) => <span key={i} className="whitespace-nowrap text-lg font-medium tracking-tight text-muted/70">{s}</span>)}
         </div>
       </div>
+      <p className="mt-3 text-center text-xs text-dim">Headlines via Google News from outlets like Reuters, CNBC and Bloomberg · reasoning by Gemini, with Groq as fallback</p>
     </section>
   );
 }
