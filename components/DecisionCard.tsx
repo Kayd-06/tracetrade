@@ -14,14 +14,21 @@ const ACTION_CLS = { BUY: "text-up", SELL: "text-down", HOLD: "text-muted" } as 
 /** Turn [BTC-N2] markers into numbered links. */
 function Reasoning({ d }: { d: Decision }) {
   const idx = new Map(d.sources.map((s, i) => [s.id, i + 1]));
-  const parts = d.proposal.reasoning.split(/(\[[A-Z]+-[A-Z0-9]+\])/g);
+  // Handles [BTC-N2] and grouped [BTC-N2, BTC-N3]
+  const parts = d.proposal.reasoning.split(/(\[[A-Z]+-[A-Z0-9]+(?:\s*,\s*[A-Z]+-[A-Z0-9]+)*\])/g);
   return (
     <p className="leading-relaxed text-fg/90">
       {parts.map((p, i) => {
-        const m = p.match(/^\[([A-Z]+-[A-Z0-9]+)\]$/);
+        const m = p.match(/^\[([A-Z0-9,\s-]+)\]$/);
         if (!m) return <span key={i}>{p}</span>;
-        const n = idx.get(m[1]);
-        return n ? <a key={i} href={`#src-${d.id}-${n}`} className="font-mono text-xs text-up hover:underline">[{n}]</a> : <span key={i} className="font-mono text-xs text-down line-through" title="Citation not in fetched sources — dropped">[?]</span>;
+        return (
+          <span key={i}>
+            {m[1].split(/\s*,\s*/).map((id, k) => {
+              const n = idx.get(id);
+              return n ? <a key={k} href={`#src-${d.id}-${n}`} className="font-mono text-xs text-up hover:underline">[{n}]</a> : <span key={k} className="font-mono text-xs text-down line-through" title="Citation not in fetched sources — dropped">[?]</span>;
+            })}
+          </span>
+        );
       })}
     </p>
   );

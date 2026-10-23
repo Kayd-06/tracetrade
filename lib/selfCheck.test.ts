@@ -113,3 +113,13 @@ describe("mock agent", () => {
     expect(verifyCitations(p.citedSourceIds, s).dropped).toEqual([]);
   });
 });
+
+describe("llmConfig", () => {
+  it("prefers Gemini with free-tier fallbacks, then Groq, else mock", async () => {
+    const { llmConfig, GEMINI_MODELS } = await import("./agent");
+    expect(llmConfig({ GEMINI_API_KEY: "k" })).toMatchObject({ mode: "live", provider: "gemini", model: GEMINI_MODELS[0], fallbackModels: GEMINI_MODELS.slice(1) });
+    expect(llmConfig({ GROQ_API_KEY: "k" })).toMatchObject({ provider: "groq" });
+    expect(llmConfig({})).toMatchObject({ mode: "mock" });
+    expect(llmConfig({ GEMINI_API_KEY: "k", MOCK_LLM: "1" })).toMatchObject({ mode: "mock" });
+  });
+});

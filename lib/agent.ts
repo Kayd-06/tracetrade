@@ -11,12 +11,15 @@ export const ProposalSchema = z.object({
   citedSourceIds: z.array(z.string()).default([]),
 });
 
-export interface LlmConfig { mode: "live" | "mock"; provider: string; baseURL?: string; apiKey?: string; model?: string }
+export interface LlmConfig { mode: "live" | "mock"; provider: string; baseURL?: string; apiKey?: string; model?: string; fallbackModels?: string[] }
+
+/** Free-tier Gemini flash models, tried in order when one is rate-limited (429) or unavailable (404). Verified via ListModels 2026-10-23; gemini-3.8-flash hit 429 on the free key, so 3.5-flash leads. */
+export const GEMINI_MODELS = ["gemini-3.5-flash", "gemini-flash-lite-latest", "gemini-3.8-flash"];
 
 export function llmConfig(env: Record<string, string | undefined> = process.env): LlmConfig {
   if (env.MOCK_LLM === "1") return { mode: "mock", provider: "mock" };
   if (env.LLM_BASE_URL && env.LLM_MODEL) return { mode: "live", provider: "custom", baseURL: env.LLM_BASE_URL, apiKey: env.LLM_API_KEY ?? env.GEMINI_API_KEY ?? env.GROQ_API_KEY ?? "none", model: env.LLM_MODEL };
-  if (env.GEMINI_API_KEY) return { mode: "live", provider: "gemini", baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/", apiKey: env.GEMINI_API_KEY, model: env.LLM_MODEL ?? "gemini-3.8-flash" };
+  if (env.GEMINI_API_KEY) return { mode: "live", provider: "gemini", baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/", apiKey: env.GEMINI_API_KEY, model: env.LLM_MODEL ?? GEMINI_MODELS[0], fallbackModels: env.LLM_MODEL ? [] : GEMINI_MODELS.slice(1) };
   if (env.GROQ_API_KEY) return { mode: "live", provider: "groq", baseURL: "https://api.groq.com/openai/v1", apiKey: env.GROQ_API_KEY, model: env.LLM_MODEL ?? "llama-3.3-70b-versatile" };
   return { mode: "mock", provider: "mock" };
 }
@@ -52,22 +55,32 @@ function extractJson(text: string): unknown {
   return JSON.parse(m[0]);
 }
 
-export async function decide(a: Asset, sig: Signals, p: PortfolioState, cfg: LlmConfig): Promise<{ proposal: Proposal; dropped: string[]; note?: string }> {
+export async function decide(a: Asset, sig: Signals, p: PortfolioState, cfg: LlmConfig): Promise<{ proposal: Proposal; dropped: string[]; note?: string; model?: string }> {
   if (cfg.mode === "mock") return finalize(a, sig, mockDecide(a, sig, p));
-  const client = new OpenAI({ apiKey: cfg.apiKey, baseURL: cfg.baseURL, timeout: 25_000, maxRetries: 1 });
+  const client = new OpenAI({ apiKey: cfg.apiKey, baseURL: cfg.baseURL, timeout: 40_000, maxRetries: 0 });
+  const models = [cfg.model!, ...(cfg.fallbackModels ?? [])];
   let lastErr = "";
-  for (let attempt = 0; attempt < 2; attempt++) {
+  let mi = 0;
+  for (let attempt = 0; attempt < 4 && mi < models.length; attempt++) {
+    const model = models[mi];
     try {
       const res = await client.chat.completions.create({
-        model: cfg.model!,
+        model,
         temperature: 0.2,
         response_format: { type: "json_object" },
-        messages: [{ role: "system", content: SYSTEM }, { role: "user", content: userPrompt(a, sig, p) + (attempt ? "\n\nYour previous reply was not valid JSON. Reply with the JSON object only." : "") }],
+        ...(cfg.provider === "gemini" ? { reasoning_effort: "low" as const } : {}),
+        messages: [{ role: "system", content: SYSTEM }, { role: "user", content: userPrompt(a, sig, p) + (lastErr.startsWith("parse") ? "\n\nYour previous reply was not valid JSON. Reply with the JSON object only." : "") }],
       });
-      const parsed = ProposalSchema.parse(extractJson(res.choices[0]?.message?.content ?? ""));
-      return finalize(a, sig, parsed);
+      let parsed;
+      try { parsed = ProposalSchema.parse(extractJson(res.choices[0]?.message?.content ?? "")); }
+      catch (e) { lastErr = `parse: ${e instanceof Error ? e.message : e}`; console.warn(`[agent] ${a.ticker} ${model}: ${lastErr.slice(0, 200)}`); continue; }
+      const out = finalize(a, sig, parsed);
+      return { ...out, note: model !== cfg.model ? `model: ${model} (fallback)` : undefined, model };
     } catch (e) {
-      lastErr = e instanceof Error ? e.message : String(e);
+      const status = (e as { status?: number }).status;
+      lastErr = `${status ?? ""} ${e instanceof Error ? e.message : String(e)}`.trim();
+      console.warn(`[agent] ${a.ticker} ${model}: ${lastErr.slice(0, 200)}`);
+      if (status === 429 || status === 404 || status === 503) mi++; // rate-limited/unavailable → next free model
     }
   }
   return { proposal: { ticker: a.ticker, action: "HOLD", sizeUsd: 0, confidence: "low", thesis: "AI unavailable — holding.", reasoning: `The AI call failed (${lastErr.slice(0, 160)}), so no trade was proposed.`, citedSourceIds: [] }, dropped: [], note: "AI error" };

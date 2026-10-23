@@ -18,7 +18,15 @@ export async function* runAgent(start: PortfolioState): AsyncGenerator<RunEvent>
   yield { type: "step", step: "signals", message: `Collected ${nSrc} sources.` };
 
   yield { type: "step", step: "reasoning", message: cfg.mode === "mock" ? "MOCK AI: rule-based stand-in (no API key set)…" : `Asking ${cfg.provider} (${cfg.model}) for decisions…` };
-  const proposals = await Promise.all(WATCHLIST.map((a, i) => decide(a, signals[i], start, cfg)));
+  // Small concurrency to stay inside free-tier rate limits.
+  const proposals: Awaited<ReturnType<typeof decide>>[] = new Array(WATCHLIST.length);
+  const conc = cfg.mode === "mock" ? WATCHLIST.length : 3;
+  for (let i = 0; i < WATCHLIST.length; i += conc) {
+    const batch = await Promise.all(WATCHLIST.slice(i, i + conc).map((a, j) => decide(a, signals[i + j], start, cfg)));
+    batch.forEach((r, j) => (proposals[i + j] = r));
+  }
+  const used = [...new Set(proposals.map((p) => p.model).filter(Boolean))];
+  if (used.length) yield { type: "step", step: "reasoning", message: `Model(s) used: ${used.join(", ")}` };
   if (cfg.mode === "live" && proposals.every((p) => p.note === "AI error")) {
     yield { type: "error", message: "Couldn't reach the AI — try again. Portfolio untouched." };
     return;
