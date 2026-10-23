@@ -45,6 +45,7 @@ Rules:
 - SELL is only possible if the portfolio holds the asset (it closes or reduces a holding; no shorting).
 - sizeUsd is the dollar amount to trade (0 for HOLD).
 - Do not default to HOLD. If the cited evidence leans clearly one way (e.g. supportive headlines from 2+ outlets, price momentum, or prediction-market odds that agree), propose a trade sized to your conviction: roughly $500-1,500 for low/med confidence, up to $2,500 for high. HOLD only when evidence is genuinely mixed, thin or contradictory.
+- No single position may exceed 20% of total portfolio value. If the asset is already near that cap, do not BUY more.
 - If you hold the asset and the evidence has turned against it, SELL part or all of it.
 - Be honest: never overstate the evidence. A separate rule-based self-check will resize or block trades that break risk limits, so propose what the evidence supports.
 - Keep thesis to one sentence; reasoning to 3-6 sentences.

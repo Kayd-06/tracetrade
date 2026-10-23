@@ -74,7 +74,7 @@ export function selfCheck(p: Proposal, portfolio: PortfolioState, sig: Signals, 
     const current = positionValue(portfolio, p.ticker, price);
     const room = Math.max(0, maxPos - current);
     if (size > room) {
-      checks.push({ rule: "Max position size", pass: false, reason: `$${fmt(size)} would make ${p.ticker} > ${RULES.maxPositionPct * 100}% of portfolio; resized to $${fmt(room)}.`, effect: "resize" });
+      checks.push({ rule: "Max position size", pass: false, reason: room < 0.01 ? `${p.ticker} is already at the ${RULES.maxPositionPct * 100}% position cap; no room to add.` : `$${fmt(size)} would make ${p.ticker} > ${RULES.maxPositionPct * 100}% of portfolio; resized to $${fmt(room)}.`, effect: "resize" });
       size = room; resized = true;
     } else pass("Max position size", `Position stays ≤ ${RULES.maxPositionPct * 100}% of portfolio.`);
 
@@ -84,7 +84,7 @@ export function selfCheck(p: Proposal, portfolio: PortfolioState, sig: Signals, 
     } else pass("Cash available", `$${fmt(portfolio.cash)} cash available.`);
 
     if (size < RULES.minTradeUsd) {
-      checks.push({ rule: "Minimum trade", pass: false, reason: `After limits only $${fmt(size)} left (min $${RULES.minTradeUsd}).`, effect: "block" });
+      checks.push({ rule: "Minimum trade", pass: false, reason: size < 0.01 ? `Nothing left to trade after the limits above.` : `After limits only $${fmt(size)} left (min $${RULES.minTradeUsd}).`, effect: "block" });
       return { verdict: "blocked", checks, flags };
     }
     size = round2(size);

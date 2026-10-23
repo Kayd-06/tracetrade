@@ -30,6 +30,13 @@ describe("selfCheck", () => {
     expect(r.executedUsd).toBe(2000);
     expect(r.checks.find((c) => c.rule === "Max position size")?.pass).toBe(false);
   });
+  it("blocks a BUY when the position is already at the 20% cap, with a clear reason", () => {
+    const pf = { ...freshPortfolio(), cash: 8000, holdings: { BTC: { qty: 20, avgCost: 100 } } };
+    const r = selfCheck(buy(), pf, sig(), "crypto", NOW);
+    expect(r.verdict).toBe("blocked");
+    expect(r.checks.find((c) => c.rule === "Max position size")?.reason).toMatch(/already at the 20% position cap/);
+    expect(r.checks.find((c) => c.rule === "Minimum trade")?.reason).toBe("Nothing left to trade after the limits above.");
+  });
   it("blocks when only one independent outlet is cited", () => {
     const r = selfCheck(buy({ citedSourceIds: ["BTC-N1", "BTC-N3"] }), freshPortfolio(), sig(), "crypto", NOW);
     expect(r.verdict).toBe("blocked");
