@@ -6,7 +6,7 @@ then a deterministic **self-check** approves, resizes or blocks each trade befor
 
 ## How it works
 1. **Signals** (free, no keys): CoinGecko (crypto), Yahoo Finance chart (stocks), Google News RSS, Polymarket gamma API.
-2. **Reasoning**: Gemini free tier via its OpenAI-compatible API (Groq free tier as fallback). Output is validated with zod.
+2. **Reasoning**: Gemini free tier via its OpenAI-compatible API, falling back per asset across free Gemini models and then Groq (gpt-oss). Output is validated with zod.
    **Citation verification**: any source ID the model cites that wasn't actually fetched is dropped and shown.
 3. **Self-check** (`lib/selfCheck.ts`): blocks stale data, fewer than 2 independent outlets, or SELL without a holding;
    resizes to max 20% per position / available cash; blocks trades under $100; flags stock trades when the US market is closed.
