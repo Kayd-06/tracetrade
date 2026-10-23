@@ -135,3 +135,9 @@ Rejected: **Binance** (HTTP 451 — region-restricted from this box), **Stooq** 
 - LLM: Gemini free tier (default) → Groq free tier (fallback) → `LLM_BASE_URL`/`LLM_MODEL` override → mock mode with no key. xAI dropped because its API is paid.
 - **Learner uncertainty:** asked what he was least sure about, Kunal said "idk". Agent-proposed main uncertainty: **can we trust the AI's citations?** Investigation in build: agent code drops any cited source ID that wasn't actually fetched; a Vitest test proves it; the UI notes dropped citations.
 - Open: verify model ids with a real key; verify Yahoo works from Vercel after deploy; Kunal adds `GEMINI_API_KEY` (optionally `GROQ_API_KEY`) to `.env.local` and Vercel himself.
+
+## Sharing
+
+- Public repo: https://github.com/Kayd-06/tracetrade (MIT)
+- Demo video: _TBD_
+- Live app (optional): _TBD_
