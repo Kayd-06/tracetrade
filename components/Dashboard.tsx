@@ -6,6 +6,7 @@ import { usePortfolio } from "@/hooks/usePortfolio";
 import { DecisionCard } from "./DecisionCard";
 import { ago, clock, pct, usd } from "@/lib/format";
 import { Reveal } from "./Reveal";
+import { formatSummary, groupRuns, summarize } from "@/lib/summary";
 import type { Decision, Quote, RunEvent, Ticker, Verdict } from "@/lib/types";
 
 type Step = { time: string; message: string; kind: "step" | "error" | "done" };
@@ -50,7 +51,7 @@ export function Dashboard() {
           } else if (ev.type === "done") {
             markRun();
             const s = ev.summary as Record<Verdict, number>;
-            push({ kind: "done", message: ev.message ?? `Done: ${s.approved} approved · ${s.resized} resized · ${s.blocked} blocked · ${s.hold} hold` });
+            push({ kind: "done", message: ev.message ?? `Done: ${formatSummary(s)}` });
           }
         }
       }
@@ -75,7 +76,8 @@ export function Dashboard() {
   const pnl = total - START_CASH;
   const log: Decision[] = portfolio.log;
 
-  const counts = log.reduce((m, d) => ({ ...m, [d.verdict]: (m[d.verdict] ?? 0) + 1 }), {} as Partial<Record<Verdict, number>>);
+  const runs = groupRuns(log);
+  const counts = runs.length ? summarize(runs[0].decisions) : summarize([]);
   return (
     <section id="terminal" className="relative scroll-mt-14 border-t border-line">
       <div className="mx-auto max-w-6xl px-5 py-24">
@@ -161,6 +163,7 @@ export function Dashboard() {
               )}
               <div className="flex items-center gap-3">
                 <h3 className="font-mono text-[10px] uppercase tracking-[0.18em] text-dim">Decision log</h3>
+                {log.length > 0 && <span className="font-mono text-[10px] text-dim">latest run</span>}
                 {log.length > 0 && (
                   <div className="flex gap-1.5 font-mono text-[10px]">
                     {counts.approved ? <span className="rounded bg-up/10 px-1.5 py-0.5 text-up">{counts.approved} approved</span> : null}
@@ -180,7 +183,16 @@ export function Dashboard() {
               )}
               {running && log.length === 0 && [0, 1, 2].map((i) => <div key={i} className="shimmer h-12 rounded-lg border border-line bg-panel" />)}
               <div className="space-y-2">
-                {log.map((d) => <div key={d.id} className="slide-in"><DecisionCard d={d} /></div>)}
+                {runs.map((r, i) => (
+                  <div key={r.runId} className="space-y-2">
+                    <div className={`flex items-center gap-3 font-mono text-[10px] text-dim ${i ? "pt-4" : ""}`}>
+                      <span className="uppercase tracking-[0.15em]">{i === 0 ? "Latest run" : "Earlier run"} · {clock(r.time)}</span>
+                      <span className="h-px flex-1 bg-line" />
+                      <span>{formatSummary(summarize(r.decisions))}</span>
+                    </div>
+                    {r.decisions.map((d) => <div key={d.id} className="slide-in"><DecisionCard d={d} /></div>)}
+                  </div>
+                ))}
               </div>
             </main>
           </div>

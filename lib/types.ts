@@ -21,7 +21,7 @@ export interface Holding { qty: number; avgCost: number }
 export interface PortfolioState { cash: number; holdings: Partial<Record<Ticker, Holding>>; log: Decision[]; updatedAt: string; lastRunAt?: string }
 
 export interface Decision {
-  id: string; time: string; proposal: Proposal; sources: Source[]; checks: CheckResult[];
+  id: string; runId?: string; time: string; proposal: Proposal; sources: Source[]; checks: CheckResult[];
   verdict: Verdict; executedUsd?: number; executedQty?: number; fillPrice?: number; flags: string[];
   droppedCitations: string[]; aiMode: "live" | "mock"; aiNote?: string; aiModel?: string;
 }
