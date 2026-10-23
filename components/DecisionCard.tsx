@@ -45,7 +45,7 @@ export function DecisionCard({ d }: { d: Decision }) {
   if (d.verdict === "hold" && !open) {
     return (
       <button onClick={() => setOpen(true)} className={`w-full text-left border border-line border-l-4 ${v.border} bg-panel/60 px-3 py-2 flex items-center gap-3 text-sm hover:bg-panel`}>
-        <span className="font-mono text-xs text-muted w-16">{clock(d.time)}</span>
+        <span className="shrink-0 whitespace-nowrap font-mono text-[11px] text-dim w-[74px]">{clock(d.time)}</span>
         <span className="font-mono font-semibold w-12">{p.ticker}</span>
         <span className={`font-mono text-xs px-1.5 py-0.5 rounded ${v.cls}`}>HOLD</span>
         <span className="text-muted truncate">{p.thesis}</span>
@@ -57,7 +57,7 @@ export function DecisionCard({ d }: { d: Decision }) {
     <article className={`border border-line border-l-4 ${v.border} bg-panel`}>
       <button onClick={() => setOpen((o) => !o)} className="w-full text-left px-3 py-2.5 hover:bg-white/[0.02]" aria-expanded={open}>
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
-          <span className="font-mono text-xs text-muted w-16">{clock(d.time)}</span>
+          <span className="shrink-0 whitespace-nowrap font-mono text-[11px] text-dim w-[74px]">{clock(d.time)}</span>
           <span className="font-mono font-semibold w-12">{p.ticker}</span>
           <span className={`font-mono font-semibold ${ACTION_CLS[p.action]} ${d.verdict === "blocked" ? "line-through opacity-70" : ""}`}>
             {p.action} {p.action !== "HOLD" && usd(p.sizeUsd, 0)}
