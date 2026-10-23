@@ -30,7 +30,7 @@ Build mode: fast
   Learner check: Read the test names; each is a rule you can see on a decision card.
   Commit: `Add Vitest tests for selfCheck and citation verification`
 
-- [ ] **3. Live AI (Gemini free tier, Groq fallback)**
+- [x] **3. Live AI (Gemini free tier, Groq fallback)**
   Becomes usable: Real model reasoning instead of MOCK AI.
   Why now: Needs Kunal's own free key in env vars (never in chat).
   PRD ref: `prd.md > The Core Journey` (step 2)
@@ -47,3 +47,4 @@ Build mode: fast
 
 ## Revisions
 - 2026-10-23: Slices 1–2 built in one pass (fast mode, delegated).
+- 2026-10-23: Slice 3 verified live; default model gemini-3.5-flash with free-tier fallbacks (3.8-flash returned 429 on the free key).
