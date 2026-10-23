@@ -23,7 +23,7 @@ export interface PortfolioState { cash: number; holdings: Partial<Record<Ticker,
 export interface Decision {
   id: string; time: string; proposal: Proposal; sources: Source[]; checks: CheckResult[];
   verdict: Verdict; executedUsd?: number; executedQty?: number; fillPrice?: number; flags: string[];
-  droppedCitations: string[]; aiMode: "live" | "mock"; aiNote?: string;
+  droppedCitations: string[]; aiMode: "live" | "mock"; aiNote?: string; aiModel?: string;
 }
 
 export type RunEvent =

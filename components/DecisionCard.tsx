@@ -80,6 +80,7 @@ export function DecisionCard({ d }: { d: Decision }) {
             <Reasoning d={d} />
             {d.droppedCitations.length > 0 && <p className="mt-1 text-xs text-down">Citation check: dropped {d.droppedCitations.length} ID(s) the AI cited that were never fetched ({d.droppedCitations.join(", ")}).</p>}
             {d.aiNote && <p className="mt-1 text-xs text-warn">{d.aiNote}</p>}
+            {d.aiModel && <p className="mt-1 font-mono text-[10px] text-muted">model: {d.aiModel}</p>}
           </section>
           <section>
             <h4 className="font-mono text-xs uppercase tracking-wider text-muted mb-1">Sources</h4>

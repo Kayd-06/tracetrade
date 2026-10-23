@@ -17,10 +17,10 @@ export async function* runAgent(start: PortfolioState): AsyncGenerator<RunEvent>
   const nSrc = signals.reduce((n, s) => n + s.sources.length, 0);
   yield { type: "step", step: "signals", message: `Collected ${nSrc} sources.` };
 
-  yield { type: "step", step: "reasoning", message: cfg.mode === "mock" ? "MOCK AI: rule-based stand-in (no API key set)…" : `Asking ${cfg.provider} (${cfg.model}) for decisions…` };
+  yield { type: "step", step: "reasoning", message: cfg.mode === "mock" ? "MOCK AI: rule-based stand-in (no API key set)…" : `Asking ${cfg.provider} (${cfg.model} first, ${cfg.targets.length} models in fallback chain) for decisions…` };
   // Small concurrency to stay inside free-tier rate limits.
   const proposals: Awaited<ReturnType<typeof decide>>[] = new Array(WATCHLIST.length);
-  const conc = cfg.mode === "mock" ? WATCHLIST.length : 3;
+  const conc = cfg.mode === "mock" ? WATCHLIST.length : 4;
   for (let i = 0; i < WATCHLIST.length; i += conc) {
     const batch = await Promise.all(WATCHLIST.slice(i, i + conc).map((a, j) => decide(a, signals[i + j], start, cfg)));
     batch.forEach((r, j) => (proposals[i + j] = r));
@@ -37,14 +37,14 @@ export async function* runAgent(start: PortfolioState): AsyncGenerator<RunEvent>
   const summary: Record<Verdict, number> = { approved: 0, resized: 0, blocked: 0, hold: 0 };
   for (let i = 0; i < WATCHLIST.length; i++) {
     const a = WATCHLIST[i];
-    const { proposal, dropped, note } = proposals[i];
+    const { proposal, dropped, note, model } = proposals[i];
     const out = selfCheck(proposal, portfolio, signals[i], a.kind);
     const d: Decision = {
       id: `${Date.now()}-${a.ticker}`, time: new Date().toISOString(), proposal,
       sources: signals[i].sources, checks: out.checks, verdict: out.verdict,
       executedUsd: out.executedUsd, executedQty: out.executedQty, fillPrice: out.fillPrice,
       flags: [...out.flags, ...signals[i].missing.map((m) => `Missing: ${m}`)],
-      droppedCitations: dropped, aiMode: cfg.mode, aiNote: note,
+      droppedCitations: dropped, aiMode: cfg.mode, aiNote: note, aiModel: model,
     };
     portfolio = applyDecision(portfolio, d);
     summary[d.verdict]++;
